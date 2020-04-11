@@ -12,6 +12,8 @@ The main requirements are pythonnet and PROSE. Below are instructions to get the
 
 This package depends on pythonnet for calling PROSE. Here are some instructions for installing it on different operating systems.
 
+(TODO)
+
 #### PROSE
 
 This package requires the [Microsoft.ProgramSynthesis](https://www.nuget.org/packages/Microsoft.ProgramSynthesis/) package. By default, pyprose will look in the [global package cache](https://docs.microsoft.com/en-us/nuget/consume-packages/managing-the-global-packages-and-cache-folders) and should find the appropriate files if it was installed in any project. This can be done by either adding it to any project in Visual Studio, or by using `nuget.exe` and downloading it to any directory.
@@ -26,45 +28,42 @@ python -m pyprose.dll check
 
 The goal of pyprose is to make it as easy as possible to use the powerful PROSE system.
 
+### basic example
+
+As a simple example, we show how to use `Transformation.Text`, which implements the FlashFill system for learning string  transformation programs (example taken from  [here](https://microsoft.github.io/prose/documentation/transformation-text/intro/)).
+
+```python
+from pyprose.transformation.text import learn_program, Example
+
+p = learn_program([
+    Example(["Greta", "Hermansson"], "Hermansson, G."),
+    Example(["Kettil", "Hansson"], "Hansson, K.")
+])
+
+# or with implicit examples
+
+p = learn_program([
+    (["Greta", "Hermansson"], "Hermansson, G."),
+    (["Kettil", "Hansson"], "Hansson, K.")
+])
+```
+
+The learned program can be ran on new inputs—a list of two strings in this case—as `p(["Etelka", "Bala"])` which returns a new string `Bala, E.`.
+
 ### constraints
 
 Most constraints have been added as arguments in their respective `learn_program` functions.
 
-As an example, take `Split.Text`. Many constraints can be added in order to aid the splitting learner. The following is a simplified excerpt from the `Split.Text` sample project.
-
-```C#
-splitSession = new SplitSession();
-var inputs = new List<StringRegion>
-{
-    SplitSession.CreateStringRegion("PE5 Leonard"),
-    SplitSession.CreateStringRegion("U109 Adam"),
-    SplitSession.CreateStringRegion("R342 Carrie")
-};
-splitSession.Inputs.Add(inputs);
-splitSession.Constraints.Add(new IncludeDelimitersInOutput(false));
-splitSession.Constraints.Add(new NthExampleConstraint(inputs[0].Value, 0, "PE5"));
-splitSession.Constraints.Add(new NthExampleConstraint(inputs[0].Value, 1, "Leonard"));
-splitSession.Constraints.Add(new NthExampleConstraint(inputs[1].Value, 0, "U109"));
-splitSession.Constraints.Add(new NthExampleConstraint(inputs[1].Value, 1, "Adam"));
-SplitProgram programFromExamples = splitSession.Learn();
-```
-
-In pyprose, the same can be achieved as follows.
-
-```python
-from pyprose.split.text import learn_program
-
-program = learn_program(["PE5 Leonard", "U109 Adam", "R342 Carrie"],
-                        include_delimiters_in_output=False,
-                        nth_examples={"PE5 Leonard": {0: "PE5", 1: "Leonard"},
-                                      "U109 Adam": {0: "U109", 1: "Adam"}})
-```
-
 All supported constraint arguments should be properly documented.
+
+### FlashProfile
+
+The FlashProfile system is implemented as `Match.Text` and yields patterns instead of programs.
 
 ## progress
 
 Progress on implementation of DSLs.
 
-- [ ] Transformation.Text
-- [ ] Split.Text
+- [x] Transformation.Text (FlashFill)
+- [x] Match.Text (FlashProfile)
+- [ ] Split.Text **(in progress)**
