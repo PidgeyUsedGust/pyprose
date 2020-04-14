@@ -73,7 +73,7 @@ Tested on Catalina (10.15.4).
 
 There are a few options.
 
-* Install [Visual Studio](https://visualstudio.microsoft.com/vs/mac/) and create a new project or download the PROSE sample project. Under Project > Manage NuGet Packages install Microsoft.ProgramSynthesis.
+* Install [Visual Studio](https://visualstudio.microsoft.com/vs/mac/) and create a new project or download the PROSE sample project. Under *Project > Manage NuGet Packages* search for Microsoft.ProgramSynthesis and install it.
 * Install NuGet through homebrew (`brew install nuget`) and install the Microsoft.ProgramSynthesis package to any directory.
   ```command
   nuget install Microsoft.ProgramSynthesis -Outputdir <anything>
@@ -87,16 +87,29 @@ We discovered that Mono 5.20 is the only version of Mono that works for both ins
 
 #### pythonnet
 
-* Install Mono 5.20.
+* Install Mono 5.20 as per [these instructions](https://www.mono-project.com/download/stable/#download-lin) but with the correct version in the third step.
   ```command
-  
+  sudo apt install gnupg ca-certificates
+  sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+  echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic/snapshots/5.20 main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+  sudo apt update
   ```
+  For other Linux distributions, find the correct version [here](http://download.mono-project.com/repo/).
 * Install pythonnet.
   ```command
   pip install pythonnet
   ```
 
 #### PROSE
+
+1. Download the lastext `nuget.exe` from [this link](https://dist.nuget.org/win-x86-commandline/latest/nuget.exe).
+   ```command
+   wget https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+   ```
+2. Install the package to any directory.
+   ```command
+   mono nuget.exe install Microsoft.ProgramSynthesis -OutputDirectory <anywhere>
+   ```
 
 ### Windows
 
