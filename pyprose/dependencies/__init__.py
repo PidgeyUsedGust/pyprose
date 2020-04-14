@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from shutil import copyfile
 from distutils.version import LooseVersion
+from typing import Optional
 import clr
 import pyprose
 
@@ -28,7 +29,7 @@ def load(dependencies):
         clr.AddReference(dependency)
 
 
-def load_dll(reference):
+def load_dll(reference: str):
     """Ensure the specified reference can be imported.
     
     Args:
@@ -41,7 +42,7 @@ def load_dll(reference):
         copyfile(dll, dll_file)
 
 
-def _find_dll_global(dll):
+def _find_dll_global(dll: str) -> Optional[str]:
     """Find DLL in global NuGet package cache.
     
     Args:
@@ -65,13 +66,7 @@ def _find_dll_global(dll):
             dll_folder = max_version / "lib" / "net45"
         else:
             dll_folder = next((max_version / "lib").glob("*net45*"))
-        return next(dll_folder.glob(dll + ".dll"))
-
-    # # try again after adding microsoft prefix
-    # if not dll.lower().startswith("microsoft.programsynthesis"):
-    #     return _find_dll_global("Microsoft.ProgramSynthesis." + dll)
-    # else:
-    #     return None
+        return next(dll_folder.glob(dll + ".dll"), None)
 
 
 # def _find_dll_local(dll):

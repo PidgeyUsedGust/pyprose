@@ -4,7 +4,7 @@ import pyprose
 if __name__ == "__main__":
 
     import pkgutil
-    import pyprose.dll
+    import pyprose.dependencies
 
     # get all dependencies
     dependencies = set()
@@ -20,5 +20,9 @@ if __name__ == "__main__":
                     dependencies.update(new_dependencies[new_dependency])
 
     print("> Found {} dependencies. Trying to find them.".format(len(dependencies)))
+    found = list()
     for dependency in dependencies:
-        pyprose.dll.load_dll(dependency)
+        dll = pyprose.dependencies._find_dll_global(dependency)
+        if dll is not None:
+            found.append(dll)
+    print("> Found {} in the global package cache.".format(len(found)))

@@ -22,12 +22,14 @@ from Microsoft.ProgramSynthesis.Matching.Text import (
     AllowedTokens,
     InDifferentCluster,
     InSameCluster,
+    OutlierLimit,
 )
 from Microsoft.ProgramSynthesis.Matching.Text.Semantics import (
     DefaultTokens,
     RegexToken,
     IToken,
 )
+from Microsoft.ProgramSynthesis.Matching.Text.Constraints import IncludeOutlierPatterns
 
 
 class Pattern:
@@ -163,6 +165,7 @@ def learn_patterns(
     allowed_tokens: Optional[Iterable[Token]] = None,
     in_different_clusters: Optional[List[List[str]]] = None,
     in_same_clusters: Optional[List[List[str]]] = None,
+    include_outlier_patterns: bool = False,
     outlier_limit: Optional[float] = None,
 ) -> List[Pattern]:
     """Learn patterns from strings.
@@ -181,6 +184,7 @@ def learn_patterns(
             allowed_tokens=allowed_tokens,
             in_different_clusters=in_different_clusters,
             in_same_clusters=in_same_clusters,
+            include_outlier_patterns=include_outlier_patterns,
             outlier_limit=outlier_limit,
         )
     ]
@@ -191,8 +195,15 @@ def _learn_patterns(
     allowed_tokens: Optional[Iterable[Token]] = None,
     in_different_clusters: Optional[List[List[str]]] = None,
     in_same_clusters: Optional[List[List[str]]] = None,
+    include_outlier_patterns: bool = False,
     outlier_limit: Optional[float] = None,
 ) -> List[PatternInfo]:
+    """
+
+    The input and output type of programs is assumed to be <str, bool>
+    as based off the `InSameCluster` constraint.
+
+    """
     session = Session()
 
     for string in strings:
@@ -211,6 +222,12 @@ def _learn_patterns(
     if in_same_clusters is not None:
         for same in in_same_clusters:
             session.Constraints.Add(InSameCluster(Array[str](same)))
+
+    if include_outlier_patterns:
+        session.Constraints.Add(IncludeOutlierPatterns[str, bool]())
+
+    if outlier_limit is not None:
+        session.Constraints.Add(OutlierLimit[str, bool](outlier_limit))
 
     patterns = session.LearnPatterns()
     return patterns
