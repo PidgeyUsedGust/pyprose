@@ -95,6 +95,12 @@ We discovered that Mono 5.20 is the only version of Mono that works for both ins
   sudo apt update
   ```
   For other Linux distributions, find the correct version [here](http://download.mono-project.com/repo/).
+* Install pythonnet dependencies.
+  ```command
+  sudo apt-get install clang
+  sudo apt-get install libglib2.0-dev
+  sudo apt-get install python3-dev
+  ```
 * Install pythonnet.
   ```command
   pip install pythonnet
