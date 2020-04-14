@@ -21,7 +21,7 @@ This package requires the [Microsoft.ProgramSynthesis](https://www.nuget.org/pac
 You can check whether (and which) dependencies are correctly detected by running the following command.
 
 ```console
-python -m pyprose.dll check
+python -m pyprose.dependencies
 ```
 
 ## how to use
