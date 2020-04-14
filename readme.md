@@ -2,11 +2,11 @@
 
 Python wrapper around the Microsoft PROSE framework. This package only provides easy wrappers around compiled DSLs, not the option for creating new DSLs.
 
-## how to use
+## How to use
 
 The goal of pyprose is to make it as easy as possible to use the powerful PROSE system.
 
-### basic example
+### Basic example
 
 As a simple example, we show how to use `Transformation.Text`, which implements the FlashFill system for learning string  transformation programs (example taken from  [here](https://microsoft.github.io/prose/documentation/transformation-text/intro/)).
 
@@ -28,7 +28,7 @@ p = learn_program([
 
 The learned program can be ran on new inputs—a list of two strings in this case—as `p(["Etelka", "Bala"])` which returns a new string `Bala, E.`.
 
-### constraints
+### Constraints
 
 Most constraints have been added as arguments in their respective `learn_program` functions.
 
@@ -38,7 +38,7 @@ All supported constraint arguments should be properly documented.
 
 The FlashProfile system is implemented as `Match.Text` and yields patterns instead of programs.
 
-## installation
+## Installation
 
 There are two main requirements.
 
@@ -117,7 +117,7 @@ We discovered that Mono 5.20 is the only version of Mono that works for both ins
 
 #### PROSE
 
-## progress
+## Progress
 
 Progress on implementation of DSLs.
 
