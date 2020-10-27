@@ -19,7 +19,7 @@ if __name__ == "__main__":
                     dependencies.add(new_dependency)
                     dependencies.update(new_dependencies[new_dependency])
 
-    print("> Found {} dependencies. Trying to find them.".format(len(dependencies)))
+    print("> Require {} dependencies. Trying to find them.".format(len(dependencies)))
     found = list()
     for dependency in dependencies:
         dll = pyprose.dependencies._find_dll_global(dependency)

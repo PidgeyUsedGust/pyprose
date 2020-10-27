@@ -1,9 +1,14 @@
-# import clr
-import sys
-from typing import List, Tuple, Optional, Union
+"""Implements the FlashFill algorithm [1]_.
 
-import pyprose
-import pyprose.dependencies
+.. [1] Gulwani, Sumit. "Automating string processing in spreadsheets using input-output
+   examples." ACM Sigplan Notices 46.1 (2011): 317-330.
+
+"""
+import sys
+from typing import List, Tuple, Optional, Union, Any
+
+from .. import ProseProgram
+from ..dependencies import load
 
 dependencies = {
     "Microsoft.ProgramSynthesis.Transformation.Text": [
@@ -12,7 +17,7 @@ dependencies = {
         "Microsoft.ProgramSynthesis.Common",
     ]
 }
-pyprose.dependencies.load(dependencies)
+load(dependencies)
 
 from Microsoft.ProgramSynthesis.Transformation.Text import (
     Example as _Example,
@@ -20,8 +25,6 @@ from Microsoft.ProgramSynthesis.Transformation.Text import (
     Session,
     Program,
 )
-
-# from Microsoft.ProgramSynthesis.Transformation.Text.Semantics import IRow
 from Microsoft.ProgramSynthesis.Transformation.Text.Translation.Python import (
     PythonTranslator,
     PythonModule,
@@ -31,134 +34,176 @@ from Microsoft.ProgramSynthesis.Translation.Python import PythonHeaderModule
 
 
 class Example:
-    """Input-output example."""
+    """An input-output or input example."""
 
-    def __init__(self, I: Union[List[str], str], O: str):
+    def __init__(self, I: Union[List[str], str], O: Optional[str] = None):
+        """
+
+        Args:
+            I: Row of input values.
+            O: Output to which `I` should be transformed. If not given,
+                considered as an input only example that can be used
+                to help the synthesizer.
+
+        """
         if isinstance(I, str):
             I = [I]
-        self._input = I
-        self._output = O
+        self.input = I
+        self.output = O
 
-    def to_prose(self) -> _Example:
-        return _Example(InputRow(self._input), self._output)
+    def __str__(self):
+        return "{} -> {}".format(", ".join(self.input), self.output)
+
+    def to_prose(self) -> Union[_Example, InputRow]:
+        if self.output is not None:
+            return _Example(InputRow(self.input), self.output)
+        return InputRow(self.input)
+
+    def has_output(self):
+        return self.output is not None
 
 
-class TransformationProgram(pyprose.ProseProgram):
-    """Transformation program.
-    
-    Adds some additional information such as which columns
-    are used. 
+class TextTransformationProgram(ProseProgram):
+    """A callable text transformation program."""
 
-    """
+    def __call__(self, row: Union[List[str], str, Example]):
+        """Transform input row.
 
-    def used_columns(self) -> List[int]:
-        """Columns used by this program.
-        
-        As these are always the column indices, we cast them
-        to integers, which allows for easily extracting them
-        from the input.
-    
-        Returns:
-            Indices of the columns used by this program.
-    
+        Args:
+            row: Can be represented as a list of values, a single
+                value or an example.
+
         """
+        return super().__call__(row)
+
+    @property
+    def uses_columns(self) -> List[int]:
+        """Indices of input columns used by this transformation program."""
         return list(map(int, self._program.ColumnsUsed))
 
-    def n_columns(self) -> int:
-        """Number of inputs used."""
-        return len(self._program.ColumnsUsed)
 
+def make_examples(data: Any) -> List[Example]:
+    """Convenience function for creating examples from data.
 
-def learn_program(
-    examples: List[Example], additional_input: Optional[List[List[str]]] = None
-) -> TransformationProgram:
-    """Learn a program.
-    
-    Args:
-        examples (iterable): List of (input, output) examples where input
-            is a tuple and output is a string.
-        additional_input (iterable): List of additional input tuples.
+    The following formats for input data are currently supported.
+
+        * A list of rows representing a table. Rows that don't have
+          the last element are considered input only examples.
+        * List of `(input, output)` tuples where `input` can be a single
+          string or a list of values.
+
+    Pandas dataframes can be easily converted to a suitable format
+    using `df.values.tolist()`.
 
     Returns:
-        A `ProseProgram` that transforms input into output.
-        
+        Examples found in the input.
+
     """
-    return TransformationProgram(
-        _learn_programs(examples, additional_input, k=1)[0], _run_program
-    )
+    examples = list()
+
+    # example given as ((input,) output) tuples.
+    if all(isinstance(line, tuple) for line in data):
+        for line in data:
+            if len(line) == 2:
+                examples.append(Example(line[0], line[1]))
+            elif len(line) == 1:
+                examples.append(Example(line[0]))
+
+    # example given as list of strings
+    elif all(all(isinstance(e, str) for e in line) for line in data):
+        n = max(map(len, data))
+        for line in data:
+            if len(line) == n and line[-1] != "" and line[-1] != None:
+                examples.append(Example(line[:-1], line[-1]))
+            elif len(line) == n:
+                examples.append(Example(line[:-1]))
+            elif len(line) + 1 == n:
+                examples.append(Example(line))
+
+    return examples
+
+
+def learn_program(examples: List[Example]) -> TextTransformationProgram:
+    """Learn a single program.
+
+    Args:
+        examples: List of examples.
+
+    """
+    return TextTransformationProgram(_make_session(examples).Learn(), _run_program)
 
 
 def learn_programs(
-    examples: List[Example],
-    additional_input: Optional[List[List[str]]] = None,
-    k: int = 1,
-) -> List[Program]:
-    """Learn multiple programs.
-    
+    examples: List[Example], k: int = 1
+) -> List[TextTransformationProgram]:
+    """Learn multiple programs and return top-`k` ranked ones.
+
     As per PROSE, `k` differently ranked programs are learned,
-    so more programs may be returned.
-
-    May return fewer than `k` programs if less are found.
-
-    Args:
-        k (int): Minimal number of differently ranked programs
-            to learn.
+    so more programs may be returned. May return fewer than `k`
+    programs if not enough are found.
 
     """
     return [
-        pyprose.ProseProgram(program, _run_program)
-        for program in _learn_programs(examples, additional_input, k)
+        TextTransformationProgram(program, _run_program)
+        for program in _make_session(examples).LearnTopK(k)
     ]
 
 
-def _learn_programs(
-    examples: List[Example],
-    additional_input: Optional[List[List[str]]] = None,
-    k: int = 1,
-) -> List[Program]:
-    """Learn a transformation program from a set of examples.
+def flashfill(data: List[List[str]]) -> List[List[str]]:
+    """Emulate spreadsheet environment.
+
+    Rows that are incomplete are filled by learning a program
+    on other rows.
 
     Args:
-        examples (iterable): List of Example objects.
-        additional_input (iterable): List of additional input columns.
-        k (int): Number of programs to lean.
+        data: A table as a list of lists.
 
     Returns:
-        A list of Programs.
+        The input data, but with incomplete rows filled.
 
     """
-    # initialise session
+    examples = make_examples(data)
+    program = learn_program(examples)
+    for i, example in enumerate(examples):
+        if not example.has_output():
+            output = program(example)
+            line = data[i]
+            if len(line) == len(e.input):
+                line.append(output)
+            else:
+                line[-1] = output
+    return data
+
+
+def _make_session(examples: List[Example]) -> List[Program]:
     session = Session()
-    # feed examples
     for example in examples:
-        session.Constraints.Add(example.to_prose())
-    # feed additional input
-    if additional_input is not None:
-        for input_ in additional_input:
-            session.Inputs.Add(InputRow(input_))
-    # learn program
-    programs = session.LearnTopK(k)
-    return programs
+        if example.has_output():
+            session.Constraints.Add(example.to_prose())
+        else:
+            session.Inputs.Add(example.to_prose())
+    return session
 
 
-def _run_program(program: Program, i: Union[List[str], str]):
+def _run_program(program: Program, i: Union[List[str], str, Example]):
     """Run a program.
-    
+
     Args:
-        i (iterable): List of input values.
-    
+        i: Input row. For convenience, we also allow raw inputs
+            to be given, rather than only examples.
+
     Returns:
-        Result of program(i) as a string.
-    
+        Result of program(i).
+
     """
-    if isinstance(i, str):
-        i = [i]
-    return program.Run(InputRow(i))
+    if not isinstance(i, Example):
+        i = Example(i)
+    return program.Run(i.to_prose())
 
 
 def _to_python(program, column_names=None):
     """Convert a program to Python.
-    
+
     Returns a header with PROSE wrapper code and a
     string with the python code itself.
 

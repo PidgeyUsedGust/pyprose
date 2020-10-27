@@ -143,6 +143,7 @@ class Token:
         
         Args:
             token (str): Any of the `Token.default_tokens`.
+
         """
         token = next(
             t.Key.Score for t in DefaultTokens.AllTokensPythonNames if t.Value == token
@@ -151,13 +152,13 @@ class Token:
 
     @classmethod
     def from_characters(
-        cls, characters, name: str = "", score: Union[float, str] = 0.0
+        cls, characters: str, name: str = "", score: Union[float, str] = 0.0
     ):
-        return cls("[{}]+".format(characters), name, score)
+        return cls("[{}]+".format(re.escape(characters)), name, score)
 
     @classmethod
-    def from_constant(cls, string, name: str = "", score: Union[float, str] = 0.0):
-        return cls(string, name, score)
+    def from_constant(cls, string: str, name: str = "", score: Union[float, str] = 0.0):
+        return cls(re.escape(string), name, score)
 
 
 def learn_patterns(
@@ -173,31 +174,58 @@ def learn_patterns(
     As presented in FlashProfile.
 
     Args:
-        strings (iterable): A list of strings.
-        allowed_tokens (iterable): List of tokens.
+        strings: A list of strings.
+        allowed_tokens: List of tokens allowed tokens. See Token for more
+            information on how to create new token classes.
+        in_different_cluster: List of lists of strings that should be in
+            different clusters.
+        in_same_cluster: List of lists of strings that should be in the
+            same clusters.
+        include_outlier_patterns: Whether to include outlier patterns. As per
+            the original documentation: *This may produce some low quality patterns.
+            Furthermore, it makes it more likely that we have overlapping patterns.*
+        outlier_limit: Allow patterns to not match this fraction of values.
 
     """
-    return [
-        Pattern(pattern)
-        for pattern in _learn_patterns(
-            strings,
-            allowed_tokens=allowed_tokens,
-            in_different_clusters=in_different_clusters,
-            in_same_clusters=in_same_clusters,
-            include_outlier_patterns=include_outlier_patterns,
-            outlier_limit=outlier_limit,
-        )
-    ]
+    session = _make_session(
+        strings,
+        allowed_tokens=allowed_tokens,
+        in_different_clusters=in_different_clusters,
+        in_same_clusters=in_same_clusters,
+        include_outlier_patterns=include_outlier_patterns,
+        outlier_limit=outlier_limit,
+    )
+    return [Pattern(pattern) for pattern in session.LearnPatterns()]
 
 
-def _learn_patterns(
+def learn_pattern(
     strings: Iterable[str],
     allowed_tokens: Optional[Iterable[Token]] = None,
     in_different_clusters: Optional[List[List[str]]] = None,
     in_same_clusters: Optional[List[List[str]]] = None,
     include_outlier_patterns: bool = False,
     outlier_limit: Optional[float] = None,
-) -> List[PatternInfo]:
+) -> Pattern:
+    """Learn a single pattern matching all examples."""
+    session = _make_session(
+        strings,
+        allowed_tokens=allowed_tokens,
+        in_different_clusters=in_different_clusters,
+        in_same_clusters=in_same_clusters,
+        include_outlier_patterns=include_outlier_patterns,
+        outlier_limit=outlier_limit,
+    )
+    return Pattern(session.LearnPattern())
+
+
+def _make_session(
+    strings: Iterable[str],
+    allowed_tokens: Optional[Iterable[Token]] = None,
+    in_different_clusters: Optional[List[List[str]]] = None,
+    in_same_clusters: Optional[List[List[str]]] = None,
+    include_outlier_patterns: bool = False,
+    outlier_limit: Optional[float] = None,
+) -> Session:
     """
 
     The input and output type of programs is assumed to be <str, bool>
@@ -229,5 +257,4 @@ def _learn_patterns(
     if outlier_limit is not None:
         session.Constraints.Add(OutlierLimit[str, bool](outlier_limit))
 
-    patterns = session.LearnPatterns()
-    return patterns
+    return session

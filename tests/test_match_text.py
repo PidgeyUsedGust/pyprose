@@ -1,3 +1,4 @@
+from pathlib import Path
 from pyprose.matching.text import learn_patterns, Token
 
 
@@ -59,13 +60,6 @@ def test_tokens():
     assert "whitespace" in Token.default_tokens()
     assert Token.default_token_score("whitespace") == -6.0
 
-    # make very specific token and check if used
-    v = Token.from_characters("aeiuo", name="vowel", score="lower")
-    c = Token.from_characters("pdgyt", name="consonant", score="lower")
-    P = Token.from_constant("pidg", name="P", score=10)
-    patterns = learn_patterns(
-        ["pidgey", "pidgeotto", "pidgeot"], allowed_tokens=[P, v, c]
-    )
     for pattern in patterns:
         assert pattern.tokens[0].Name == "P"
 

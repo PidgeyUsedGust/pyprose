@@ -1,4 +1,9 @@
-from pyprose.transformation.text import learn_program, learn_programs, Example
+from pyprose.transformation.text import (
+    learn_program,
+    learn_programs,
+    make_examples,
+    Example,
+)
 
 
 def test_format_name():
@@ -18,9 +23,11 @@ def test_normalize_phone_number():
 
 
 def test_merge_names():
-    examples = [Example(["Kettil", "Hansson"], "Hansson, Kettil")]
-    inputs = [["Greta", "Hermansson"]]
-    program = learn_program(examples, additional_input=inputs)
+    examples = [
+        Example(["Kettil", "Hansson"], "Hansson, Kettil"),
+        Example(["Greta", "Hermansson"]),
+    ]
+    program = learn_program(examples)
     assert program(["Etelka", "Bala"]) == "Bala, Etelka"
     assert program(["Myron", "Lampros"]) == "Lampros, Myron"
 
@@ -32,8 +39,24 @@ def test_top_10_normalize_phone_number():
     assert programs[0]("425 233 1234") == "425-233-1234"
 
 
+def test_make_examples():
+    examples1 = make_examples(
+        [
+            ["Greta", "Hermansson", "Hermansson, G."],
+            ["Kettil", "Hansson", "Hansson, K."],
+        ]
+    )
+    examples2 = make_examples(
+        [
+            (["Greta", "Hermansson"], "Hermansson, G."),
+            (["Kettil", "Hansson"], "Hansson, K."),
+        ]
+    )
+
+
 if __name__ == "__main__":
     test_format_name()
     test_normalize_phone_number()
     test_merge_names()
     test_top_10_normalize_phone_number()
+    test_make_examples()

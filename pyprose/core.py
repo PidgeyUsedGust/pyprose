@@ -16,6 +16,14 @@ class ProseProgram:
     """Wrapper around PROSE programs."""
 
     def __init__(self, program: Program, runner: Callable[[Program, Any], Any]):
+        """
+
+        Args:
+            program: The ``Microsoft.ProgramSynthesis.Program`` that is wrapped.
+            runner: A function that takes ``program`` and its arguments ``a``
+                and returns ``program(a)``. 
+        
+        """
         self._program = program
         self._runner = runner
 
@@ -24,4 +32,5 @@ class ProseProgram:
 
     @property
     def score(self) -> float:
+        """Ranking score of this program, higher is better."""
         return self._program.Score
