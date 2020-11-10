@@ -9,6 +9,6 @@ setup(
     author_email="gust.verbruggen@cs.kuleuven.be",
     license="MIT",
     packages=find_packages(),
-    python_requires="==3.7",
+    python_requires=">=3.7,<3.8",
     install_requires=["pycparser", "pythonnet"],
 )
