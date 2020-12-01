@@ -123,14 +123,20 @@ def make_examples(data: Any) -> List[Example]:
     return examples
 
 
-def learn_program(examples: List[Example]) -> TextTransformationProgram:
+def learn_program(examples: List[Example]) -> Optional[TextTransformationProgram]:
     """Learn a single program.
 
     Args:
         examples: List of examples.
+    
+    Returns:
+        A transformation program if one is found, `None` otherwise.
 
     """
-    return TextTransformationProgram(_make_session(examples).Learn(), _run_program)
+    program = _make_session(examples).Learn()
+    if program is None:
+        return None
+    return TextTransformationProgram(program, _run_program)
 
 
 def learn_programs(
