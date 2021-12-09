@@ -31,7 +31,7 @@ author = "Gust Verbruggen"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-    'sphinx_autodoc_typehints'
+    "sphinx_toolbox.more_autodoc.typehints",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -69,5 +69,5 @@ html_theme_options = {
     },
 }
 
-autodoc_typehints = 'none'
+autodoc_typehints = "none"
 autodoc_mock_imports = ["clr", "Microsoft", "System"]
