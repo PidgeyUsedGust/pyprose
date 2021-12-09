@@ -6,9 +6,9 @@ setup(
     version="0.0.1",
     description="Python wrapper around the Microsoft PROSE framework.",
     author="Gust Verbruggen",
-    author_email="gust.verbruggen@cs.kuleuven.be",
+    author_email="gust.verbruggen@kuleuven.be",
     license="MIT",
     packages=find_packages(),
-    python_requires=">=3.7,<3.8",
-    install_requires=["pycparser", "pythonnet"],
+    python_requires=">=3.7, <3.9",
+    install_requires=[],
 )

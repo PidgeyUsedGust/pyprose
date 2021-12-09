@@ -4,10 +4,9 @@
    examples." ACM Sigplan Notices 46.1 (2011): 317-330.
 
 """
-import sys
-from typing import List, Tuple, Optional, Union, Any
+from typing import List, Optional, Union, Any
 
-from .. import ProseProgram
+from ..core import ProseProgram
 from ..dependencies import load
 
 dependencies = {
@@ -19,18 +18,14 @@ dependencies = {
 }
 load(dependencies)
 
-from Microsoft.ProgramSynthesis.Transformation.Text import (
-    Example as _Example,
-    InputRow,
-    Session,
-    Program,
-)
-from Microsoft.ProgramSynthesis.Transformation.Text.Translation.Python import (
+from Microsoft.ProgramSynthesis.Wrangling import Example as ProseExample, InputRow  # type: ignore
+from Microsoft.ProgramSynthesis.Transformation.Text import Session, Program  # type: ignore
+from Microsoft.ProgramSynthesis.Transformation.Text.Translation.Python import (  # type: ignore
     PythonTranslator,
     PythonModule,
 )
-from Microsoft.ProgramSynthesis.Translation import OptimizeFor
-from Microsoft.ProgramSynthesis.Translation.Python import PythonHeaderModule
+from Microsoft.ProgramSynthesis.Translation import OptimizeFor  # type: ignore
+from Microsoft.ProgramSynthesis.Translation.Python import PythonHeaderModule  # type: ignore
 
 
 class Example:
@@ -54,9 +49,9 @@ class Example:
     def __str__(self):
         return "{} -> {}".format(", ".join(self.input), self.output)
 
-    def to_prose(self) -> Union[_Example, InputRow]:
+    def to_prose(self) -> Union[ProseExample, InputRow]:
         if self.output is not None:
-            return _Example(InputRow(self.input), self.output)
+            return ProseExample(InputRow(self.input), self.output)
         return InputRow(self.input)
 
     def has_output(self):
@@ -128,7 +123,7 @@ def learn_program(examples: List[Example]) -> Optional[TextTransformationProgram
 
     Args:
         examples: List of examples.
-    
+
     Returns:
         A transformation program if one is found, `None` otherwise.
 
@@ -174,7 +169,7 @@ def flashfill(data: List[List[str]]) -> List[List[str]]:
         if not example.has_output():
             output = program(example)
             line = data[i]
-            if len(line) == len(e.input):
+            if len(line) == len(example.input):
                 line.append(output)
             else:
                 line[-1] = output

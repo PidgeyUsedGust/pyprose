@@ -2,6 +2,7 @@ from pyprose.transformation.text import (
     learn_program,
     learn_programs,
     make_examples,
+    flashfill,
     Example,
 )
 
@@ -46,12 +47,29 @@ def test_make_examples():
             ["Kettil", "Hansson", "Hansson, K."],
         ]
     )
+    assert len(examples1) == 2
+    assert examples1[0].has_output()
+    assert examples1[1].has_output()
+
     examples2 = make_examples(
         [
-            (["Greta", "Hermansson"], "Hermansson, G."),
-            (["Kettil", "Hansson"], "Hansson, K."),
+            ["Greta", "Hermansson", "Hermansson, G."],
+            ["Kettil", "Hansson"],
         ]
     )
+    assert len(examples2) == 2
+    assert examples2[0].has_output()
+    assert not examples2[1].has_output()
+
+
+def test_flashfill():
+    table = [
+        ["Greta", "Hermansson", "Hermansson, G."],
+        ["Kettil", "Hansson", "Hansson, K."],
+        ["Myron", "Lampros"],
+    ]
+    flashfill(table)
+    assert table[2][2] == "Lampros, M."
 
 
 if __name__ == "__main__":
@@ -60,3 +78,4 @@ if __name__ == "__main__":
     test_merge_names()
     test_top_10_normalize_phone_number()
     test_make_examples()
+    test_flashfill()

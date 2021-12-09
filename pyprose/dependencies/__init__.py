@@ -6,16 +6,14 @@ global cache.
 
 """
 
-import re
 import sys
 from pathlib import Path
 from shutil import copyfile
 from distutils.version import LooseVersion
 from typing import Optional
 import clr
-import pyprose
 
-sys.path.append(str(Path(__file__).parent))
+sys.path.append(str(Path(__file__).parent.resolve()))
 
 
 def load(dependencies):
@@ -31,7 +29,7 @@ def load(dependencies):
 
 def load_dll(reference: str):
     """Ensure the specified reference can be imported.
-    
+
     Args:
         name (str): Name of the reference to be imported.
 
@@ -44,17 +42,14 @@ def load_dll(reference: str):
 
 def _find_dll_global(dll: str) -> Optional[str]:
     """Find DLL in global NuGet package cache.
-    
+
     Args:
         dll (str): Name of the DLL file that is needed.
 
     Returns:
-        Tuple of (path, version) where path is the folder
-        that contains the DLL and version is its version
-        as a string.
-    
-    """
+        Path of the desired DSL or None if none is found.
 
+    """
     folder = Path.home() / ".nuget" / "packages" / dll.lower()
     if folder.exists():
         versions = list()

@@ -5,16 +5,16 @@ Python wrapper around the Microsoft `PROSE <https://microsoft.github.io/prose/>`
 The goal of ``pyprose`` is providing easy access to existing DSLs implemented in this framework.
 
 As a simple example, the following snippet demonstrates how to learn programs
-with FlashFill, implemented in PROSE as **Transformation.Text**. 
+with FlashFill, implemented in PROSE as ``Transformation.Text``. 
 
 ::
 
-   from pyprose.transformation.text import learn_program, make_examples
+   from pyprose.transformation.text import learn_program, Example
 
-   p = learn_program(make_examples([
-      ["Greta", "Hermansson", "Hermansson, G."],
-      ["Kettil", "Hansson", "Hansson, K."]
-   ]))
+   p = learn_program([
+      Example(("Greta", "Hermansson"), "Hermansson, G."),
+      Example(("Kettil", "Hansson"), "Hansson, K.")
+   ])
 
 This program can then be used on new examples.
 
@@ -47,3 +47,11 @@ The following DSLs have been fully implemented and all documented arguments test
 The following DSLs are currently in development.
 
 * ``Split.Text`` (predictive text splitting)
+
+If you are interested in seeing a specific DSL integrated sooner, don't hesitate to contact me!
+
+Contact
+=======
+
+`gust.verbruggen@kuleuven.be`
+

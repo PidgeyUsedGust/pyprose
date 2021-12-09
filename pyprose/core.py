@@ -9,7 +9,7 @@ dependencies = {
 }
 pyprose.dependencies.load(dependencies)
 
-from Microsoft.ProgramSynthesis import Program
+from Microsoft.ProgramSynthesis import Program  # type: ignore
 
 
 class ProseProgram:
@@ -21,8 +21,8 @@ class ProseProgram:
         Args:
             program: The ``Microsoft.ProgramSynthesis.Program`` that is wrapped.
             runner: A function that takes ``program`` and its arguments ``a``
-                and returns ``program(a)``. 
-        
+                and returns ``program(a)``.
+
         """
         self._program = program
         self._runner = runner

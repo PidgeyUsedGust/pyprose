@@ -1,37 +1,45 @@
 Installation
 ============
 
-There are two main requirements in order to use ``pyprose``.
+There are two main prerequisites in order to use **pyprose**.
 
-* Compiled PROSE assemblies. These are not shipped with ``pyprose`` but are easily
+* Compiled PROSE assemblies. These are not shipped with **pyprose** but are easily
   obtained by installing the `Microsoft.ProgramSynthesis`_ package from NuGet using
   `Visual Studio`_ or the `NuGet CLI`_.
 * `Python for .NET`_ (``pythonnet``) is used to load and run code from these assemblies.
 
-These are unfortunately not trivial to install on all operating systems. In order to
-make the process as seamless as possible, we provide detailed instructions that are
-verified to work on specific operating systems.
+These are unfortunately not trivial to install on all operating systems. Installing **pyprose** will therefore **NOT** install these prerequisites by default, as that might result in a lot of errors or the installation failing. In order to make the process as seamless as possible, we provide detailed instructions that are verified to work on specific operating systems.
 
-We have found that Python 3.7 works for all dependencies and can be easily installed
-using `pyenv`_.
+Once the prerequisites are succesfully installed, a simple
 
-.. _Microsoft.ProgramSynthesis: https://www.nuget.org/packages/Microsoft.ProgramSynthesis/
-.. _Visual Studio: https://visualstudio.microsoft.com/
-.. _NuGet CLI: https://docs.microsoft.com/en-us/nuget/consume-packages/install-use-packages-nuget-cli
-.. _Python for .NET: http://pythonnet.github.io/
-.. _pyenv: https://github.com/pyenv/pyenv
+::
+
+   pip install git+https://github.com/pidgeyusedgust/pyprose
+
+should suffice. Testing the installation is possible with
+
+::
+
+  python -m pyprose.dependencies
+
+which should print whether all of the required dependencies were found.
+
+We have found that Python 3.7 and 3.8 work for all dependencies and can be easily installed
+using `pyenv`_ (Linux and macOS) or the Microsoft Store (Windows).
+
+If you have any problems, feel free to open an `issue`_. If you managed to get it to work with a configuration not shown here, please help me keep this page updated.
 
 .. _install-macos:
 
 macOS
------
+~~~~~
 
 Tested on Catalina (10.15.4) under Python 3.7 installed though `pyenv`_.
 
 .. _macospythonnet:
 
 pythonnet
-~~~~~~~~~
+"""""""""
 
 Install `Mono <https://www.mono-project.com/download/stable/>`_ and update the following
 environment variables::
@@ -42,12 +50,12 @@ environment variables::
 Install ``pycparser`` and ``pythonnet``::
 
   pip install pycparser
-  pip install pythonnet
+  pip install git+https://github.com/pythonnet/pythonnet
 
 .. _macosprose:
 
 PROSE
-~~~~~
+"""""
 There are a few options.
 
 * Install `Visual Studio`_ and create a new project or download the PROSE sample project. Under ``Project > Manage NuGet`` Packages search for ``Microsoft.ProgramSynthesis`` and install it.
@@ -56,7 +64,7 @@ There are a few options.
       nuget install Microsoft.ProgramSynthesis -Outputdir <anything>
 
 Linux
------
+~~~~~
 
 Tested on Ubuntu 19.10.
 
@@ -65,7 +73,7 @@ We discovered that Mono 5.20 is the only version of Mono that works for both ins
 .. _linuxpythonnet:
 
 pythonnet
-~~~~~~~~~
+"""""""""
 
 * Install Mono 5.20 as per `these instructions <https://www.mono-project.com/download/stable/#download-lin>`_ but with the correct version in the third step::
 
@@ -86,12 +94,12 @@ For other Linux distributions, find the correct version `here <http://download.m
 * Install ``pythonnet``::
 
     pip install pycparser
-    pip install pythonnet
+    pip install git+https://github.com/pythonnet/pythonnet
   
 .. _linuxprose:
 
 PROSE
-~~~~~
+"""""
 
 Download the latest ``nuget.exe``::
 
@@ -104,24 +112,24 @@ Run it with ``mono`` to install the package to any directory::
 .. _install-windows:
 
 Windows
--------
+~~~~~~~
 
-Tested on Windows 10.
+Tested on Windows 10 and Windows 11.
 
 .. _windowspythonnet:
 
 pythonnet
-~~~~~~~~~
+"""""""""
 
 Install through ``pip``::
 
     pip install pycparser
-    pip install pythonnet
+    pip install git+https://github.com/pythonnet/pythonnet
 
 .. _windowsprose:
 
 PROSE
-~~~~~
+"""""
 
 There are two options.
 
@@ -129,3 +137,10 @@ There are two options.
 * Download `nuget.exe <https://dist.nuget.org/win-x86-commandline/latest/nuget.exe>`_ and add it to PATH or move it to the current directory. Install the package to any directory::
       
       nuget.exe install Microsoft.ProgramSynthesis -Outputdir <anything>
+
+.. _Microsoft.ProgramSynthesis: https://www.nuget.org/packages/Microsoft.ProgramSynthesis/
+.. _Visual Studio: https://visualstudio.microsoft.com/
+.. _NuGet CLI: https://docs.microsoft.com/en-us/nuget/consume-packages/install-use-packages-nuget-cli
+.. _Python for .NET: http://pythonnet.github.io/
+.. _pyenv: https://github.com/pyenv/pyenv
+.. _issue: https://github.com/PidgeyUsedGust/pyprose/issues

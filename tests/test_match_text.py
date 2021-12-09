@@ -1,4 +1,3 @@
-from pathlib import Path
 from pyprose.matching.text import learn_patterns, Token
 
 
@@ -47,7 +46,6 @@ def test_match_dates():
         ]
     )
     assert len(patterns) == 6
-
     extracted = set()
     for pattern in patterns:
         extracted.update(
@@ -59,34 +57,28 @@ def test_match_dates():
 def test_tokens():
     assert "whitespace" in Token.default_tokens()
     assert Token.default_token_score("whitespace") == -6.0
-
-    for pattern in patterns:
-        assert pattern.tokens[0].Name == "P"
+    # for pattern in patterns:
+    #     assert pattern.tokens[0].Name == "P"
 
 
 def test_same_cluster():
-
     strings = ["1992", "2003", "January"]
-
     patterns1 = learn_patterns(strings)
     assert len(patterns1) == 2
-
     patterns2 = learn_patterns(strings, in_same_clusters=[["1992", "January"]])
     assert len(patterns2) == 1
     assert patterns2[0].matches("Anything2001")
 
 
 def test_different_cluster():
-
     strings = ["1992", "2001", "1995"]
-
     patterns1 = learn_patterns(strings)
     assert len(patterns1) == 1
     assert patterns1[0].matches("2020")
     assert patterns1[0].matches("1885")
-
     patterns2 = learn_patterns(strings, in_different_clusters=[["1992", "2001"]])
     assert len(patterns2) == 2
+    print(patterns2)
 
 
 if __name__ == "__main__":
