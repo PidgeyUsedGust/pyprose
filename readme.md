@@ -35,9 +35,11 @@ More information and examples can be found in the documentation.
 
 ## Installation
 
-This package requires Python 3.7, ``pythonnet`` and compiled PROSE assemblies. The documentation contains detailed instructions for installing these dependencies.
+This package requires ``pythonnet`` and compiled PROSE assemblies. The documentation contains detailed instructions for installing these dependencies.
 
-Once the dependencies are installed, a simple `pip install pyprose` should suffice.
+Once the dependencies are installed, a simple 
+```pip install git+https://github.com/pidgeyusedgust/pyprose```
+should suffice.
 
 ## Progress
 
@@ -46,3 +48,9 @@ Progress on implementation of DSLs.
 - [x] Transformation.Text (FlashFill)
 - [x] Match.Text (FlashProfile)
 - [ ] Split.Text **(in progress)**
+
+If you are interested in seeing a specific DSL integrated sooner, don't hesitate to contact me!
+
+## Contact
+
+Questions, `gust.verbruggen@kuleuven.be`
