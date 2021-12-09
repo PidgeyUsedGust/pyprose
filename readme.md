@@ -25,7 +25,7 @@ This package requires ``pythonnet`` and compiled PROSE assemblies. The documenta
 
 Once the dependencies are installed, a simple
 
-```pip install git+https://github.com/pidgeyusedgust/pyprose``
+```pip install git+https://github.com/pidgeyusedgust/pyprose```
 
 should suffice.
 
