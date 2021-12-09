@@ -17,13 +17,13 @@ p = learn_program(make_examples([
 
 The learned program can be ran on new inputs—a list of two strings in this case. In this case, calling `p(["Etelka", "Bala"])` then returns a new string `"Bala, E."`.
 
-More information and examples can be found in the documentation.
+More information and examples can be found in the [documentation](https://pyprose.readthedocs.io/en/latest/).
 
 ## Installation
 
-This package requires ``pythonnet`` and compiled PROSE assemblies. The documentation contains detailed instructions for installing these dependencies.
+This package requires ``pythonnet`` and compiled PROSE assemblies. The [documentation](https://pyprose.readthedocs.io/en/latest/install.html) contains detailed instructions for obtaining these prerequisites.
 
-Once the dependencies are installed, a simple
+Once they are satisfied, a simple
 
 ```pip install git+https://github.com/pidgeyusedgust/pyprose```
 
