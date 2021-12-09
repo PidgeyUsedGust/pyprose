@@ -70,3 +70,4 @@ html_theme_options = {
 }
 
 autodoc_typehints = 'none'
+autodoc_mock_imports = ["clr", "Microsoft", "System"]
