@@ -15,7 +15,7 @@ p = learn_program(make_examples([
 ]))
 ```
 
-The learned program can be ran on new inputs—a list of two strings in this case. In this case, calling `p(["Etelka", "Bala"])` then returns a new string `Bala, E.`.
+The learned program can be ran on new inputs—a list of two strings in this case. In this case, calling `p(["Etelka", "Bala"])` then returns a new string `"Bala, E."`.
 
 More information and examples can be found in the documentation.
 
@@ -23,8 +23,10 @@ More information and examples can be found in the documentation.
 
 This package requires ``pythonnet`` and compiled PROSE assemblies. The documentation contains detailed instructions for installing these dependencies.
 
-Once the dependencies are installed, a simple 
-```pip install git+https://github.com/pidgeyusedgust/pyprose```
+Once the dependencies are installed, a simple
+
+```pip install git+https://github.com/pidgeyusedgust/pyprose``
+
 should suffice.
 
 ## Progress
@@ -32,11 +34,11 @@ should suffice.
 Progress on implementation of DSLs.
 
 - [x] Transformation.Text (FlashFill)
-- [x] Match.Text (FlashProfile)
+- [x] Matching.Text (FlashProfile)
 - [ ] Split.Text **(in progress)**
 
 If you are interested in seeing a specific DSL integrated sooner, don't hesitate to contact me!
 
 ## Contact
 
-Questions, `gust.verbruggen@kuleuven.be`
+Questions or feedback? Don't hesitate to contact me at `gust.verbruggen@kuleuven.be`!
